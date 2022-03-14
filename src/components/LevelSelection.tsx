@@ -69,7 +69,7 @@ const levelOptions: LevelOptions[] = [
 
 export default function LevelSelection({ isVisible, onCancel, onLevelSelected }: Props) {
     return (
-        <Modal onRequestClose={onCancel} visible={isVisible} animationType="slide" transparent>
+        <Modal onRequestClose={onCancel} visible={isVisible} animationType="fade" transparent>
             <View style={styles.frame}>
                 <View style={styles.container}>
                     <Text style={styles.title}>Choose level</Text>

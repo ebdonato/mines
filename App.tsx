@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { StatusBar } from 'expo-status-bar'
-import { StyleSheet, View, Alert, Platform } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import params from './src/params'
 import {
     Board,
@@ -16,6 +16,7 @@ import {
 import MineField from './src/components/MineField'
 import Header from './src/components/Header'
 import LevelSelection from './src/components/LevelSelection'
+import ShowMessage from './src/components/ShowMessage'
 
 const styles = StyleSheet.create({
     container: {
@@ -37,6 +38,11 @@ type State = {
     lost: boolean
 }
 
+type MessageState = {
+    showModal: boolean
+    message: string
+}
+
 export default function App() {
     const cols = params.getColumnsAmount()
     const rows = params.getRowsAmount()
@@ -52,15 +58,12 @@ export default function App() {
 
     const [showLevelSelection, setShowLevelSelection] = useState(false)
 
-    const showAlert = (message: string | null) => {
+    const [messageState, setMessageState] = useState<MessageState>({ showModal: false, message: '' })
+
+    const showAlert = (message: string) => {
         if (!message) return
 
-        if (Platform.OS === 'web') {
-            // eslint-disable-next-line no-alert
-            alert(message)
-        } else {
-            Alert.alert(message)
-        }
+        setMessageState({ showModal: true, message })
     }
 
     const openFieldHandle = (row: number, column: number): void => {
@@ -71,7 +74,7 @@ export default function App() {
         const lost = hadExplosion(board)
         const won = wonGame(board)
 
-        let message: string | null = null
+        let message = ''
 
         if (lost) {
             showMines(board)
@@ -98,7 +101,7 @@ export default function App() {
 
         const won = wonGame(board)
 
-        let message: string | null = null
+        let message = ''
 
         if (won) {
             message = WON_MESSAGE
@@ -129,6 +132,11 @@ export default function App() {
                 isVisible={showLevelSelection}
                 onCancel={() => setShowLevelSelection(false)}
                 onLevelSelected={levelSelectionHandle}
+            />
+            <ShowMessage
+                isVisible={messageState.showModal}
+                onCancel={() => setMessageState({ showModal: false, message: '' })}
+                message={messageState.message}
             />
             <Header
                 flagsLeft={minesAmount() - flagsUsed(state.board)}
